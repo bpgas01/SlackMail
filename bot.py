@@ -5,22 +5,12 @@ from slackclient import SlackClient
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-print('Logging in to the email server.. Please wait')
 
 uname = 'sendcoffee2018@gmail.com'
 pword = 'Noah201818!@'
 count = 0
-try:
-    msg = MIMEMultipart()
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.starttls()
-    server.login(uname, pword)
-    print('Login successful :)')
-    
-except:
-    print('Login unsucessful please try again')
-    raise TypeError('Cannot connect to server.\
- Please try again later or check source code')
+
+
 
 token = 'xoxb-334803754180-393368417605-0kW93djkeHg1huYNaFwDHaHi'
 slack_client = SlackClient(token)
@@ -43,7 +33,12 @@ def parse_direct_mention(message_text):
     matches = re.search(MENTION_REGEX, message_text)
     return (matches.group(1), matches.group(2).strip()) if matches else (None, None)
 
-def handle_command(command, channel, uname, count):
+def handle_command(command, channel, uname, count, pword):
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(uname, pword)
+    print('Login successful :)')
+    
     default_response = "Not sure what you mean. Try *{}*.".format('Order large capp with skim milk :)')
     response = None
     if command.startswith(EXAMPLE_COMMAND):    
@@ -60,10 +55,12 @@ def handle_command(command, channel, uname, count):
         channel=channel,
         text=response or default_response
     )
-    msg['Subject'] = "Coffee order: |{}|.".format(count)
-    msg.attach(MIMEText('\n' + command, 'plain'))
-    text = msg.as_string()
+    
+    text = 'Order received {}'.format(command)
+    
     server.sendmail(uname, "upstairscoffee2018@gmail.com", text)
+    print("Email sent with order")
+    server.quit()
     
 if __name__ == "__main__":
     if slack_client.rtm_connect(with_team_state=False):
@@ -72,7 +69,7 @@ if __name__ == "__main__":
         while True:
             command, channel = parse_bot_commands(slack_client.rtm_read())
             if command:
-                handle_command(command, channel, uname, count)
+                handle_command(command, channel, uname, count, pword)
                 count = count + 1
                 print(count)
             time.sleep(RTM_READ_DELAY)
