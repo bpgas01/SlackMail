@@ -6,13 +6,13 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 
-uname = 'sendcoffee2018@gmail.com'
-pword = 'Noah201818!@'
+uname = 'EMAIL HERE'
+pword = 'EMAIL ACC PASSWORD'
 count = 0
 
 
 
-token = 'xoxb-334803754180-393368417605-0kW93djkeHg1huYNaFwDHaHi'
+token = 'TOKEN HERE'
 slack_client = SlackClient(token)
 starterbot_id = None
 
@@ -58,7 +58,7 @@ def handle_command(command, channel, uname, count, pword):
     
     text = 'Order received {}'.format(command)
     
-    server.sendmail(uname, "upstairscoffee2018@gmail.com", text)
+    server.sendmail(uname, "RECEIVING EMAIL", text)
     print("Email sent with order")
     server.quit()
     
